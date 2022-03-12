@@ -1,1 +1,48 @@
 
+Q- Write a common use-case, where you will use a daemon set instead of replica set.
+Ans: 
+
+A DaemonSet ensures that all (or some) Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. As nodes are removed from the cluster, those Pods are garbage collected. Deleting a DaemonSet will clean up the Pods it created.
+
+UseCases : 
+1:running a cluster storage daemon on every node
+2:running a logs collection daemon on every node
+3:running a node monitoring daemon on every node
+
+
+
+Q: Suppose you have deployed your application using a deployment controller. Assume the initial number of replicas is one. Write the steps needed to update a container's image using deployment, making sure that there is zero downtime.
+Ans: for  Zero downtime , we can increase replicas of pod   as  mentioned:
+       if   mysql  is running on single  pod , need to increase three size to 3 .
+
+     1: Check existing deployment by running command 
+	      kubectl get po -o=wide
+		
+	 2: by running below , we can increase size of  replica set 
+	     kubectl scale  --replicas=3 deployment/mysql
+
+
+Q: You have deployed an application, that is listening at port 8000. You used a replica-set to deploy it and created a NodePort service to make it accessible. But when you test it, somehow the application is not reachable at the port. Write down your approach and sequentially all the steps that you will take to find out the issue.
+Ans :   
+step 1:Just check for ep and node port by describe command .
+      kubectl describe services <serviceName>
+	  Note few point :
+	  1: IP
+	  2: PORT
+	  3: Target port .
+	  4: NodePort
+	  5: End Point
+	  
+	  2 : now list your port that  is running on application 
+	      kubectl get po -o=wide 
+		endpoint ips that you got from first step should be match here for IP . 
+		  
+	  3: Now need to check node port ,if it blocked from firewall , we need to allow that port .
+	  
+	  4: use command 
+	       curl <ip>:<nodeport>
+		   you will get result .
+		   
+	  5: kubectl expose will also work 
+	     kubectl expose name appname --port=80 --target-port=8000
+
